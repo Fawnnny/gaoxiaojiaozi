@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>高校教师资格证 · 刷题宝典</title>
+<style>
+  :root{
+    --bg:#f2f4f8; --card:#fff; --text:#1f2430; --sub:#6b7280;
+    --primary:#2f6fed; --ok:#12a150; --bad:#e5484d; --line:#e5e8ef;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    font-size:15px;line-height:1.65;-webkit-tap-highlight-color:transparent;
+  }
+  /* ---------- 顶部栏 ---------- */
+  .topbar{
+    position:sticky;top:0;z-index:30;background:#fff;
+    border-bottom:1px solid var(--line);box-shadow:0 1px 6px rgba(20,30,60,.05);
+  }
+  .bar-inner{max-width:880px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .brand{font-weight:700;font-size:16px;letter-spacing:.3px}
+  .brand em{color:var(--primary);font-style:normal}
+  .stats{margin-left:auto;display:flex;gap:14px;font-size:13px;color:var(--sub);flex-wrap:wrap}
+  .stats b{color:var(--text)}
+  .tools{max-width:880px;margin:0 auto;padding:0 16px 10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px}
+  .chk{display:flex;align-items:center;gap:5px;color:var(--sub);cursor:pointer;user-select:none}
+  select{
+    padding:5px 8px;border:1px solid var(--line);border-radius:8px;background:#fff;
+    font-size:13px;color:var(--text);outline:none;font-family:inherit;
+  }
+  .btn{
+    padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:#fff;
+    color:var(--text);font-size:13px;cursor:pointer;font-family:inherit;transition:.15s;
+  }
+  .btn:hover:not(:disabled){border-color:#c7cede;background:#f7f9fc}
+  .btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}
+  .btn.primary:hover:not(:disabled){background:#2560d8}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .btn.on{background:#eef4ff;border-color:var(--primary);color:var(--primary)}
+
+  /* ---------- 主卡片 ---------- */
+  .wrap{max-width:880px;margin:0 auto;padding:18px 16px 60px}
+  .card{background:var(--card);border-radius:14px;padding:22px 24px 18px;box-shadow:0 2px 14px rgba(20,30,60,.06)}
+  .qmeta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+  .badge{
+    font-size:12px;padding:2px 9px;border-radius:20px;background:#eef4ff;
+    color:var(--primary);border:1px solid #d8e4ff;
+  }
+  .badge.warn{background:#fff7e6;color:#b26a00;border-color:#ffe0a3}
+  .qindex{margin-left:auto;font-size:12.5px;color:var(--sub)}
+  .qtext{font-size:16.5px;font-weight:600;line-height:1.75;margin:2px 0 16px;white-space:pre-wrap;word-break:break-word}
+
+  /* ---------- 选项 ---------- */
+  .option{
+    display:flex;gap:10px;align-items:flex-start;
+    padding:11px 14px;margin-bottom:9px;border:1.5px solid var(--line);
+    border-radius:10px;background:#fff;cursor:pointer;transition:.13s;
+  }
+  .option:hover:not(.locked){border-color:#b9c6e4;background:#f8faff}
+  .option .tag{
+    flex:0 0 24px;height:24px;line-height:24px;text-align:center;border-radius:50%;
+    background:#eef1f7;color:#5a6478;font-weight:700;font-size:13px;transition:.13s;
+  }
+  .option .txt{flex:1;white-space:pre-wrap;word-break:break-word}
+  .option.sel{border-color:var(--primary);background:#eef4ff}
+  .option.sel .tag{background:var(--primary);color:#fff}
+  .option.right{border-color:var(--ok);background:#eaf8f0}
+  .option.right .tag{background:var(--ok);color:#fff}
+  .option.wrong{border-color:var(--bad);background:#fdeeee}
+  .option.wrong .tag{background:var(--bad);color:#fff}
+  .option.locked{cursor:default}
+
+  /* ---------- 解析 ---------- */
+  .analysis{margin-top:14px;border-top:1px dashed var(--line);padding-top:14px}
+  .ans-line{font-size:14.5px;margin-bottom:6px}
+  .ans-line b{color:var(--ok);font-size:16px;letter-spacing:1px}
+  .my-ans{font-size:13px;margin-left:10px}
+  .my-ans.ok{color:var(--ok)}
+  .my-ans.bad{color:var(--bad)}
+  .ana-line{
+    font-size:14px;color:#3f4759;background:#f7f9fc;border-left:3px solid var(--primary);
+    border-radius:0 8px 8px 0;padding:10px 12px;white-space:pre-wrap;word-break:break-word;
+  }
+
+  /* ---------- 操作按钮 ---------- */
+  .actions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+  .actions .btn{padding:9px 18px;font-size:14px;border-radius:10px}
+  .actions .spacer{flex:1}
+
+  /* ---------- 空状态 ---------- */
+  .empty{text-align:center;color:var(--sub);padding:60px 10px;font-size:14px;line-height:2}
+
+  /* ---------- 答题卡抽屉 ---------- */
+  .sheet-mask{
+    position:fixed;inset:0;background:rgba(15,20,35,.4);opacity:0;pointer-events:none;
+    transition:.22s;z-index:40;
+  }
+  .sheet-mask.show{opacity:1;pointer-events:auto}
+  .sheet{
+    position:fixed;top:0;right:0;height:100%;width:min(420px,88vw);background:#fff;
+    transform:translateX(102%);transition:transform .25s ease;z-index:50;
+    display:flex;flex-direction:column;box-shadow:-6px 0 24px rgba(20,30,60,.12);
+  }
+  .sheet.show{transform:none}
+  .sheet-head{
+    padding:14px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;
+    font-weight:700;font-size:15px;
+  }
+  .sheet-head .btn{margin-left:auto;padding:3px 10px}
+  .sheet-grid{
+    flex:1;overflow-y:auto;padding:14px 16px;display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(42px,1fr));gap:8px;align-content:start;
+  }
+  .cell{
+    height:38px;border-radius:8px;border:1.5px solid var(--line);background:#fff;
+    font-size:13px;color:#5a6478;cursor:pointer;font-family:inherit;transition:.13s;
+  }
+  .cell:hover{border-color:#b9c6e4}
+  .cell.ok{background:#eaf8f0;border-color:var(--ok);color:var(--ok);font-weight:700}
+  .cell.bad{background:#fdeeee;border-color:var(--bad);color:var(--bad);font-weight:700}
+  .cell.active{outline:2px solid var(--primary);outline-offset:1px}
+  .cell.disputed{position:relative}
+  .cell.disputed::after{
+    content:'';position:absolute;top:2px;right:3px;width:5px;height:5px;
+    border-radius:50%;background:#f0a020;
+  }
+  .sheet-foot{padding:12px 16px;border-top:1px solid var(--line);display:flex;gap:10px}
+  .sheet-foot .btn{flex:1;padding:9px;font-size:13.5px}
+
+  @media (max-width:560px){
+    .card{padding:18px 16px 14px;border-radius:12px}
+    .qtext{font-size:16px}
+    .brand{font-size:15px}
+    .stats{width:100%;margin-left:0;justify-content:space-between;gap:6px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ==================== 顶部栏 ==================== -->
+<div class="topbar">
+  <div class="bar-inner">
+    <div class="brand">高校教师资格证 · <em>刷题宝典</em></div>
+    <div class="stats" id="stats"></div>
+  </div>
+  <div class="tools">
+    <label class="chk"><input type="checkbox" id="skipDisputed"> 跳过争议题（*）</label>
+    <select id="modeSel">
+      <option value="random">随机顺序</option>
+      <option value="seq">题库顺序</option>
+    </select>
+    <button class="btn" id="btnWrongOnly">只刷错题</button>
+    <button class="btn" id="btnRestart">重新开始</button>
+    <button class="btn" id="btnSheet">答题卡</button>
+  </div>
+</div>
+
+<!-- ==================== 主体 ==================== -->
+<div class="wrap">
+  <div class="card">
+    <div class="empty" id="emptyTip" hidden></div>
+
+    <div id="qArea">
+      <div class="qmeta">
+        <span class="badge" id="qType">单选题</span>
+        <span class="badge warn" id="qDisputed" hidden>⚠ 有争议（*）· 可跳过</span>
+        <span class="qindex" id="qIndex"></span>
+      </div>
+
+      <div class="qtext" id="qText"></div>
+      <div class="options" id="options"></div>
+
+      <div class="analysis" id="analysis" hidden>
+        <div class="ans-line">正确答案：<b id="ansText"></b><span class="my-ans" id="myAns"></span></div>
+        <div class="ana-line" id="anaText"></div>
+      </div>
+
+      <div class="actions">
+        <button class="btn" id="btnPrev">← 上一题</button>
+        <button class="btn primary" id="btnSubmit">确认答案</button>
+        <div class="spacer"></div>
+        <button class="btn" id="btnSkip">跳过本题</button>
+        <button class="btn primary" id="btnNext">下一题 →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 答题卡抽屉 ==================== -->
+<div class="sheet-mask" id="sheetMask"></div>
+<aside class="sheet" id="sheet">
+  <div class="sheet-head">
+    答题卡 <button class="btn" id="btnSheetClose">关闭</button>
+  </div>
+  <div class="sheet-grid" id="sheetGrid"></div>
+  <div class="sheet-foot">
+    <button class="btn" id="btnFilterAll">全部题目</button>
+    <button class="btn" id="btnFilterWrong">只刷错题</button>
+  </div>
+</aside>
+
+<script>
+/* ==========================================================================
+   ① 题库区 —— 把题目粘贴到下面的数组里
+   --------------------------------------------------------------------------
+   每题字段说明：
+   {
+     "id": 1,                       // 可选，题号
+     "type": "single",              // single=单选 | multiple=多选 | judge=判断
+     "question": "题干文字……",
+     "options": ["选项A内容","选项B内容","选项C内容","选项D内容"],
+     "answer": "A",                 // 单选："A"；多选："ABC" 或 ["A","B","C"]
+                                    // 判断："A"(正确) / "B"(错误)
+     "analysis": "解析文字……",
+     "disputed": false              // true = 原题带 * 有争议，可被"跳过争议题"过滤
+   }
+   ========================================================================== */
+const QUESTION_BANK = [
+  /* ===== 👇👇👇  题目粘贴到这里（保持数组格式）  👇👇👇 ===== */
+
+{"id":1,"type":"single","question":"人的心理活动的内容和源泉是（ ）","options":["感觉和知觉","客观现实","认识过程","主观能动性"],"answer":"B","analysis":"","disputed":false},
+{"id":2,"type":"single","question":"心理现象分为（ ）","options":["心理过程与个性心理","认知过程与个性心理","情感过程与个性心理","意志过程与个性心理"],"answer":"A","analysis":"","disputed":false},
+{"id":3,"type":"single","question":"心理过程包括（ ）","options":["认知过程、情感过程、行为过程","知觉过程、情感过程、行为过程","感觉过程、知觉过程、意志过程","认知过程、情感过程、意志过程"],"answer":"D","analysis":"","disputed":false},
+{"id":4,"type":"single","question":"一种有目的、有计划地严格控制或创设一定条件，以引起或改变被试的心理活动，从而进行分析的方法是（ ）","options":["调查法","实验法","观察法","测验法"],"answer":"B","analysis":"","disputed":false},
+{"id":5,"type":"single","question":"在心理学研究中，采用标准化量表对个体的心理特征进行测查的方法是（ ）","options":["实验法","观察法","调查法","测验法"],"answer":"D","analysis":"","disputed":false},
+{"id":6,"type":"single","question":"高等教育心理学的学科性质是（ ）","options":["理论科学","应用科学","交叉科学","实践科学"],"answer":"C","analysis":"","disputed":false},
+{"id":7,"type":"single","question":"高等教育心理学是研究高等学校情境中（ ）的基本规律的科学。","options":["学生的学与教师的教","学生的学","教师的教","学生身心发展"],"answer":"D","analysis":"","disputed":false},
+{"id":8,"type":"single","question":"（ ）出版的《教育心理学》标志着科学教育心理学的创建。","options":["桑代克","布鲁纳","斯金纳","苛勒"],"answer":"A","analysis":"","disputed":false},
+{"id":9,"type":"single","question":"高等教育心理学内容体系中的核心问题是（ ）","options":["学生的智力开发","教师的教学活动","学生的学习活动","学生的心理健康"],"answer":"C","analysis":"","disputed":false},
+{"id":10,"type":"single","question":"（ ）主要描述人类的信息加工过程，是人类心理活动的基础。","options":["记忆","思维","认知","感知"],"answer":"C","analysis":"","disputed":false},
+{"id":11,"type":"single","question":"高等教育心理学的研究方法应该符合我国的教育方针和教育原则，能够在教育工作中发挥积极的作用。这体现了高等教育心理学方法论的（ ）。","options":["客观性原则","发展性原则","理论联系实际原则","教育性原则"],"answer":"D","analysis":"","disputed":false},
+{"id":12,"type":"single","question":"“眼观六路，耳听八方”反映了注意的（ ）","options":["稳定性","选择性","分配性","转移性"],"answer":"C","analysis":"","disputed":false},
+{"id":13,"type":"single","question":"课堂上，同学们正在认真听讲，突然教室窗外传来一声巨响，大家不约而同地转头看向窗外。这种心理现象属于（ ）。","options":["无意注意","有意注意","有意后注意","注意的分配"],"answer":"A","analysis":"","disputed":false},
+{"id":14,"type":"single","question":"学生熟练地阅读课文，既有预定的目的，又不需要或节省意志努力。这种活动中的注意是（ ）","options":["无意注意","有意注意","有意后注意","注意的分配"],"answer":"C","analysis":"原题未提供选项，依据答案文件为C。","disputed":false},
+{"id":15,"type":"single","question":"大学生思维发展的主要特点是（ ）。","options":["从以具体形象思维为主向以抽象逻辑思维为主转变","从以遵从形式思维为主向以形式逻辑思维为主转变","从以辩证逻辑思维为主向以形式逻辑思维为主转变","从以形式逻辑思维为主向以辩证逻辑思维为主转变"],"answer":"D","analysis":"","disputed":false},
+{"id":16,"type":"single","question":"（ ）是人脑对客观事物的本质与规律的概括和间接的反映。","options":["记忆","认知","感知","思维"],"answer":"D","analysis":"","disputed":false},
+{"id":17,"type":"single","question":"对大学生思维的主要特征，描述不正确的是（ ）。","options":["形式逻辑思维进一步发展","辩证逻辑思维逐渐发展，不断成熟","创造性思维有了明显发展","创造性思维占据主导地位"],"answer":"D","analysis":"","disputed":false},
+{"id":18,"type":"single","question":"天空出现朝霞，就会下雨；天空出现晚霞，就会放晴。人们由此得出“朝霞不出门，晚霞行千里”的结论。这主要体现的思维特征是（ ）。","options":["间接性","抽象性","概括性","理解性"],"answer":"C","analysis":"","disputed":false},
+{"id":19,"type":"single","question":"为了暂时记住朋友的电话号码以便拨号，最适宜的记忆策略是（ ）。","options":["复述策略","精细加工策略","组织策略","元认知策略"],"answer":"A","analysis":"","disputed":false},
+{"id":20,"type":"single","question":"短时记忆的容量大约是（ ）。","options":["5±2个组块","6±2个组块","7±2个组块","9±2个组块"],"answer":"C","analysis":"","disputed":false},
+{"id":21,"type":"single","question":"奥运会期间看游泳比赛的记忆属于（ ）。","options":["情境记忆","语义记忆","程序记忆","陈述性记忆"],"answer":"A","analysis":"","disputed":false},
+{"id":22,"type":"single","question":"按照记忆存储时间的长短可将记忆分为三种，其中不包括（ ）。","options":["瞬时记忆","短时记忆","长时记忆","情景记忆"],"answer":"D","analysis":"","disputed":false},
+{"id":23,"type":"single","question":"影响记忆的因素有（ ）。","options":["识记材料的数量和性质","组块化编码方式","觉醒状态","以上全是"],"answer":"D","analysis":"","disputed":false},
+{"id":24,"type":"single","question":"根据艾宾浩斯遗忘曲线，遗忘的速度表现为（ ）。","options":["先慢后快","先快后慢","前后一样","中途加快"],"answer":"B","analysis":"","disputed":false},
+{"id":25,"type":"single","question":"学生在考试时，回答选择题的记忆活动主要是（ ）。","options":["识记","保持","再认","回忆"],"answer":"C","analysis":"","disputed":false},
+{"id":26,"type":"single","question":"在对系列呈现的学习材料进行自由回忆时，发现最先呈现的材料遗忘少。这种现象称为（ ）。","options":["首因效应","启动效应","词优效应","近因效应"],"answer":"A","analysis":"","disputed":false},
+{"id":27,"type":"single","question":"短时记忆中的信息进入长时记忆的主要条件是（ ）。","options":["注意","复述","输入","储存"],"answer":"B","analysis":"","disputed":false},
+{"id":28,"type":"single","question":"长时记忆遗忘的主要原因是自然衰退和（ ）。","options":["固化","迁移","干扰","定势"],"answer":"C","analysis":"","disputed":false},
+{"id":29,"type":"single","question":"“舌尖现象”（话到嘴边说不出来）主要是由于（ ）。","options":["记忆编码失败","记忆保持失败","记忆提取失败","记忆干扰"],"answer":"C","analysis":"","disputed":false},
+{"id":30,"type":"single","question":"学习英语单词时，先学的单词会干扰后学的单词的记忆，这种现象称为（ ）。","options":["倒摄抑制","前摄抑制","超限抑制","分化抑制"],"answer":"B","analysis":"","disputed":false},
+{"id":31,"type":"single","question":"骑自行车时，即使多年不骑也能很快上手。这种记忆属于（ ）。","options":["陈述性记忆","外显记忆","程序性记忆","情景记忆"],"answer":"C","analysis":"","disputed":false},
+{"id":32,"type":"single","question":"站在公交站台，你虽然看到了很多张脸，但只有几秒钟后这些脸的细节就消失了。这主要是因为（ ）。","options":["短时记忆容量有限","感觉记忆保持时间极短","长时记忆编码失败","注意选择不足"],"answer":"B","analysis":"","disputed":false},
+{"id":33,"type":"single","question":"皮亚杰认为，个体的认知结构是通过（ ）两个过程的循环而不断发展的。","options":["调整和平衡","同化和顺应","反馈和改变","顺应和平衡"],"answer":"B","analysis":"","disputed":false},
+{"id":34,"type":"single","question":"根据皮亚杰认知发展理论，大学生处于（ ）阶段。","options":["前运算阶段","感知运算阶段","形式运算阶段","具体运算阶段"],"answer":"C","analysis":"","disputed":false},
+{"id":35,"type":"single","question":"皮亚杰认为，儿童认知发展的根本动力来源于（ ）","options":["社会文化传递","成熟与经验的相互作用","成人的系统教学","遗传基因的自动展开"],"answer":"B","analysis":"","disputed":false},
+{"id":36,"type":"single","question":"前运算阶段的儿童往往认为，把同样多的水倒入不同形状的杯子中，水量会发生变化，这说明他们缺乏（ ）","options":["可逆性思维","守恒概念","抽象逻辑思维","假设演绎能力"],"answer":"B","analysis":"","disputed":false},
+{"id":37,"type":"single","question":"在下列各种学习动机中，属于内在动机的是（ ）","options":["获得解答","获得高分","获得老师表扬","获得好名次"],"answer":"A","analysis":"","disputed":false},
+{"id":38,"type":"single","question":"以下学习动机不属于外部动机的是（ ）","options":["万般皆下品，唯有读书高","读书是一种乐趣","书中自有颜如玉，书中自有黄金屋","为中华之崛起而读书"],"answer":"B","analysis":"","disputed":false},
+{"id":39,"type":"single","question":"马斯洛需要层次理论中，最高层次的需要是（ ）","options":["尊重的需要","自我实现的需要","归属与爱的需要","审美的需要"],"answer":"B","analysis":"","disputed":false},
+{"id":40,"type":"single","question":"内在动机是维持学习的基本动力，学生具有的三种最基本内在动机不包括（ ）。","options":["好奇内驱力","行动内驱力","胜任内驱力","互惠内驱力"],"answer":"B","analysis":"","disputed":false},
+{"id":41,"type":"single","question":"一个学生认为自己能否考上大学主要取决于运气和试题难度。这种归因属于（ ）。","options":["内部、稳定、可控","内部、不稳定、可控","外部、稳定、不可控","外部、不稳定、不可控"],"answer":"D","analysis":"","disputed":false},
+{"id":42,"type":"single","question":"学生把考试失败归结为自己的努力不够，这种归因属于（ ）。","options":["内部稳定但不可控的归因","外部不稳定但可控的归因","外部稳定但不可控的归因","内部不稳定但可控的归因"],"answer":"D","analysis":"","disputed":false},
+{"id":43,"type":"single","question":"高成就动机者的最主要特征是（ ）。","options":["正确的归因","选择中等难度任务","具有冒险精神和挑战性","坚定的信念"],"answer":"B","analysis":"","disputed":false},
+{"id":44,"type":"single","question":"学习动机的功能不包括（ ）。","options":["激活功能","指向功能","强化功能","信号功能"],"answer":"D","analysis":"","disputed":false},
+{"id":45,"type":"single","question":"引起动机的外部条件是（ ）。","options":["诱因","需要","兴趣","信念"],"answer":"A","analysis":"","disputed":false},
+{"id":46,"type":"single","question":"心理学研究表明，动机强度与工作效率的关系是（ ）。","options":["正比关系","反比关系","正U型曲线关系","倒U型曲线关系"],"answer":"D","analysis":"","disputed":false},
+{"id":47,"type":"single","question":"“鱼我所欲也，熊掌亦我所欲也，二者不可得兼”反映的动机冲突是（ ）。","options":["接近—接近型冲突","回避—回避型冲突","接近—回避型冲突","多重接近—回避型冲突"],"answer":"A","analysis":"","disputed":false},
+{"id":48,"type":"single","question":"某大学生既想自主创业，但同时又不想耽误学习，这属于动机冲突中的（ ）。","options":["趋避冲突","双趋冲突","双避冲突","双重趋避冲突"],"answer":"B","analysis":"","disputed":false},
+{"id":49,"type":"single","question":"小刘每次考试成绩都不理想，渐渐地他认为自己怎么也学不好了，根据教育心理学知识推断，他的归因维度为（ ）。","options":["内部不稳定可控的","内部稳定不可控的","外部稳定不可控的","外部不稳定可控的"],"answer":"B","analysis":"","disputed":false},
+{"id":50,"type":"single","question":"根据耶基斯—多德森定律，中等偏难的学习任务，学习者最佳的动机强度是（ ）。","options":["较高","中等偏弱","中等","中等偏强"],"answer":"B","analysis":"","disputed":false},
+{"id":51,"type":"single","question":"学生将自己考试失败归因于“自己能力不足”，这可能导致（ ）。","options":["更加努力，提高能力","改变学习策略","感到羞愧并放弃努力","调整目标为更可行"],"answer":"C","analysis":"","disputed":false},
+{"id":52,"type":"single","question":"小明为了获得老师和家长的表扬，学习非常刻苦，她的学习动机表现为（ ）。","options":["认知内驱力","自我提高内驱力","附属的内驱力","求知欲"],"answer":"C","analysis":"","disputed":false},
+{"id":53,"type":"single","question":"成就动机理论的主要代表人物阿特金森认为，避免失败者的目的是避免失败，减少失败感，所以他们倾向于选择非常容易或非常困难的任务，当一项任务的成功率为50%时，他们会（ ）。","options":["可能选择","犹豫不决","回避这项任务","坚决选择"],"answer":"C","analysis":"","disputed":false},
+{"id":54,"type":"single","question":"小复习学非常努力，但成绩总是不理想，逐渐出现了被动、退缩、无动力的状态。这种心理反应属于（ ）。","options":["学习焦虑","习得性无助","自我评估降低","认知功能障碍"],"answer":"B","analysis":"","disputed":false},
+{"id":55,"type":"single","question":"心理学家关于“习得无助”的研究给我们的启示是（ ）。","options":["学生不能有挫折","学生必须有快乐","学生必须有兴趣","学生不能有太多的失败"],"answer":"D","analysis":"","disputed":false},
+{"id":56,"type":"single","question":"下列关于情绪与情感的说法，正确的是（ ）。","options":["情绪是稳定的，情感是暂时的","情绪与生理需要相关，情感与社会需要相关","情绪是人类特有的，情感是动物也有的","情绪和情感是一回事，只是叫法不同"],"answer":"B","analysis":"","disputed":false},
+{"id":57,"type":"single","question":"大学生的情绪一旦被激发，往往会在较长时间内影响个体的心理与行为，这说明大学生的情绪情感发展具有（ ）。","options":["丰富性","心境化","波动性","复杂性"],"answer":"B","analysis":"","disputed":false},
+{"id":58,"type":"single","question":"大学生情绪情感发展最突出的特点是（ ）","options":["具有两面性","具有稳定性","具有外显性","具有境遇性"],"answer":"A","analysis":"","disputed":false},
+{"id":59,"type":"single","question":"“感时花溅泪，恨别鸟惊心”所表达的情绪状态是（ ）","options":["情调","激情","心境","应激"],"answer":"C","analysis":"","disputed":false},
+{"id":60,"type":"single","question":"下列哪一项不属于情绪的基本分类（基本情绪）？（ ）","options":["快乐","愤怒","羞耻","恐惧"],"answer":"C","analysis":"","disputed":false},
+{"id":61,"type":"single","question":"狂喜、暴怒、极度恐惧等强烈而短暂的情绪状态被称为（ ）","options":["心境","激情","应激","情操"],"answer":"B","analysis":"","disputed":false},
+{"id":62,"type":"single","question":"埃里克森认为，个体在12-18岁期间最重要的任务是形成（ ）","options":["勤奋感","亲密感","自我同一性","成功感"],"answer":"C","analysis":"","disputed":false},
+{"id":63,"type":"single","question":"有过于敏感多疑、过分地自我保护、嫉妒别人、固执己见、爱责备或加罪于人等表现的人格异常属于（ ）。","options":["冲动型人格","偏执型人格","强迫型人格","表演型人格"],"answer":"B","analysis":"","disputed":false},
+{"id":64,"type":"single","question":"心理学家卡特尔将人的智力分为两种，其中由速度、能量、快速适应新环境的测验来度量的一般学习和行为能力，称为（ ）。","options":["流体智力","晶体智力","多元智力","成功智力"],"answer":"A","analysis":"","disputed":false},
+{"id":65,"type":"single","question":"弗洛伊德认为完整的人格结构不包括（ ）。","options":["本我","自我","真我","超我"],"answer":"C","analysis":"","disputed":false},
+{"id":66,"type":"single","question":"人格特征随着年龄和习得经验的增加而逐渐改变的过程称（ ）。","options":["人格结构","人格动力","人格发展","人格适应"],"answer":"C","analysis":"","disputed":false},
+{"id":67,"type":"single","question":"基于埃里克森的人格发展理论，大学生的发展任务是（ ）。","options":["发展信任感","获得主动感","建立自我同一性","获得亲密感"],"answer":"D","analysis":"","disputed":false},
+{"id":68,"type":"single","question":"“人心不同，各如其面”反映的是人格的（ ）。","options":["独特性","稳定性","功能性","综合性"],"answer":"A","analysis":"","disputed":false},
+{"id":69,"type":"single","question":"关于智力与学业成绩关系的正确陈述是（ ）。","options":["智力越高，学业成绩越好","在所有因素中，智力是影响学业成绩的最重要因素","中等智力水平的学生学业成绩最好","智力与学业成绩存在中等程度的正相关"],"answer":"D","analysis":"","disputed":false},
+{"id":70,"type":"single","question":"埃里克森认为，青春期阶段心理社会性发展的主要矛盾是（ ）。","options":["自主对羞怯、疑虑的矛盾","勤奋对自卑的矛盾","亲密对孤独的矛盾","自我同一性对角色混乱的矛盾"],"answer":"D","analysis":"","disputed":false},
+{"id":71,"type":"single","question":"某大学生具有活泼好动，反应敏捷，兴趣容易转移，情绪发生快而多变，善于交际等特点。据此可以初步判定该生的气质类型属于（ ）。","options":["胆汁质","粘液质","抑郁质","多血质"],"answer":"D","analysis":"","disputed":false},
+{"id":72,"type":"single","question":"一个人在心理活动的强度、灵活性、稳定性等动力方面所表现出来的特征称为（ ）。","options":["意志","动机","气质","能力"],"answer":"C","analysis":"","disputed":false},
+{"id":73,"type":"single","question":"卡特尔将智力分为流体智力和晶体智力，其中流体智力（ ）。","options":["主要依赖后天学习积累","随年龄增长而持续上升","在青少年期达到高峰后逐渐下降","与文化教育水平密切相关"],"answer":"C","analysis":"","disputed":false},
+{"id":74,"type":"single","question":"下列哪项属于晶体智力的典型表现？（ ）。","options":["快速完成数字推理题","根据图形规律找出缺失项","运用词汇和常识解答问题","快速反应速度测验"],"answer":"C","analysis":"","disputed":false},
+{"id":75,"type":"single","question":"下列哪一项最能准确描述气质与性格的关系？（ ）。","options":["气质主要是后天形成的，性格主要是先天遗传的","气质无好坏之分，性格有好坏之分","气质反映人对现实的态度，性格反映神经系统的特性","气质可塑性强，性格稳定性强"],"answer":"B","analysis":"","disputed":false},
+{"id":76,"type":"single","question":"在气质类型的教育应用上，对于胆汁质的学生，教师应（ ）。","options":["严格要求，防止其粗心大意","多加鼓励，关心其情绪变化","培养其自制力，防止急躁冲动","安排需要耐心的任务，促进其细致性"],"answer":"C","analysis":"","disputed":false},
+{"id":77,"type":"single","question":"个体在特定情境下由于练习或反复经验而产生的行为或行为潜能的较持久的变化是（ ）。","options":["实践","反应","反射","学习"],"answer":"D","analysis":"","disputed":false},
+{"id":78,"type":"single","question":"根据学习的定义，下列属于学习的现象是（ ）。","options":["吃了酸的食物流唾液","望梅止渴","蜘蛛织网","儿童模仿电影中人物的行为"],"answer":"D","analysis":"","disputed":false},
+{"id":79,"type":"single","question":"根据学习进行的方式把学习分为（ ）。","options":["知识学习和技能学习","机械学习和意义学习","接受学习和发现学习","概念学习和意义学习"],"answer":"C","analysis":"","disputed":false},
+{"id":80,"type":"single","question":"程序性知识的表征方式是（ ）。","options":["命题","图式","产生式","表征"],"answer":"C","analysis":"","disputed":false},
+{"id":81,"type":"single","question":"陈述性知识一般以（ ）形式在头脑中储存和表征。","options":["动作","表象","命题和网络","以上三者"],"answer":"C","analysis":"","disputed":false},
+{"id":82,"type":"single","question":"数学课、物理课的作业或练习总比历史课、政治课的要多，从知识分类的角度看，这是因为（ ）。","options":["前两门课程的程序性知识多","后两门课程的认知要求低","前两门课程的抽象水平高","后两门课程的策略性知识多"],"answer":"A","analysis":"","disputed":false},
+{"id":83,"type":"single","question":"小明在学习单词beautiful时，复述8遍后达到了“记住”的程度。根据过度学习的观点，最少还需要复述（ ）才会不容易忘记，进而达到更高的掌握程度。","options":["5分钟","8遍","4遍","越多越好"],"answer":"C","analysis":"","disputed":false},
+{"id":84,"type":"single","question":"（ ）是一种学习对另一种学习的影响。","options":["知识迁移","知识建构","知识表征","知识发展"],"answer":"A","analysis":"","disputed":false},
+{"id":85,"type":"single","question":"“举一反三”和“触类旁通”所说的是（ ）。","options":["创造性","学习迁移","发现教学法","学会学习"],"answer":"B","analysis":"","disputed":false},
+{"id":86,"type":"single","question":"从迁移的观点来看，“举一反三”属于（ ）。","options":["横向正迁移","纵向正迁移","横向负迁移","纵向负迁移"],"answer":"A","analysis":"","disputed":false},
+{"id":87,"type":"single","question":"认为可以通过背诵古典语言（拉丁语、希腊语、古汉语）和解答数学、自然科学中的难题来提高大学生学习迁移能力的观点属于（ ）。","options":["关系转换说","经验泛化说","形式训练说","相同要素说"],"answer":"C","analysis":"","disputed":false},
+{"id":88,"type":"single","question":"在学完一篇逻辑结构严密的课文以后，勾画出课文的论点论据的逻辑关系图以帮助理解和记忆，这种学习策略属于（ ）。","options":["精加工策略","组织策略","复述策略","做笔记策略"],"answer":"B","analysis":"","disputed":false},
+{"id":89,"type":"single","question":"在练习的中后期往往出现进程的暂时停顿现象，称为（ ）。","options":["平原现象","起伏现象","低谷现象","高原现象"],"answer":"D","analysis":"","disputed":false},
+{"id":90,"type":"single","question":"当一个不爱学习的学生表现出良好的学习行为时，老师撤除对他的批评，老师的这一做法属于（ ）。","options":["正强化","负强化","消退","惩罚"],"answer":"B","analysis":"","disputed":false},
+{"id":91,"type":"single","question":"当学生取得好的成绩后，老师、家长给予表扬和鼓励，这符合桑代克学习规律中的（ ）。","options":["准备律","练习律","效果律","动机律"],"answer":"C","analysis":"","disputed":false},
+{"id":92,"type":"single","question":"下列各项中运用了美国心理学家斯金纳的操作性条件作用中的强化手段的是（ ）。","options":["对违纪学生给予批评","对成绩下降学生给予提醒","对舞弊学生取消其成绩","对犯错误学生因表现好而取消记过"],"answer":"D","analysis":"","disputed":false},
+{"id":93,"type":"single","question":"儿童容易模仿影视片中反面人物的行为，结果导致不良品德，为了避免影视片的消极影响，根据班杜拉社会学习理论，适当的做法是（ ）。","options":["避免学生观看这类影片","对有模仿行为的儿童进行说理教育","影片中尽量少描写反面人物","影视片使观众体验到“恶有恶报、善有善报”"],"answer":"D","analysis":"","disputed":false},
+{"id":94,"type":"single","question":"（ ）指人们对自己是否能够成功地从事某一成就行为的主观判断。","options":["教学效能感","自我效能感","自我控制感","自我统一感"],"answer":"B","analysis":"","disputed":false},
+{"id":95,"type":"single","question":"先于教学内容或新的学习材料所呈现的一种引导性材料，它是对新学习材料的简化与概括，在新学习材料与学习者原有观念之间起认知桥梁作用，这种学习内容的组织技术或教学策略叫作（ ）。","options":["先行组织者","概念图","思维导图","支架"],"answer":"A","analysis":"原题未提供选项，依据答案文件为A。","disputed":false},
+{"id":96,"type":"single","question":"强调学生在学习中的主动性及认知结构的重要性，认为教学的最终目标是促进学生对学科基本结构的掌握，持这种观点的心理学家是（ ）。","options":["加涅","奥苏泊尔","阿特金森","布鲁纳"],"answer":"D","analysis":"","disputed":false},
+{"id":97,"type":"single","question":"奥苏贝尔认为，学生学习的实质是（ ）。","options":["有意义接受学习","有意义发现学习","发现学习","探究学习"],"answer":"A","analysis":"","disputed":false},
+{"id":98,"type":"single","question":"下列关于布鲁纳提出的发现学习的理解正确的是（ ）。","options":["发现学习一定需要学习者的主动思考","学生完成对某一原理的发现学习不需要教师的帮助","发现学习要解决的任务是科学家研究的前沿问题","发现学习不可能发生在低年龄儿童的学习过程中"],"answer":"A","analysis":"","disputed":false},
+{"id":99,"type":"single","question":"强调知识的动态性和相对性属于（ ）观点。","options":["建构主义","信息加工心理学","人本主义","行为主义心理学"],"answer":"A","analysis":"","disputed":false},
+{"id":100,"type":"single","question":"有一种学习理论认为，学习不是从不知到知的过程，而是学习者在原有的知识经验的基础上不断“生长”出新知识意义的过程，这种学习理论称为（ ）。","options":["人本主义学习理论","行为主义学习理论","建构主义学习理论","认知学派学习理论"],"answer":"C","analysis":"","disputed":false},
+{"id":101,"type":"single","question":"下列哪句话能反映“最近发展区理论”的核心思想（ ）。","options":["棍棒出孝子","兴趣是最好的老师","不愤不启，不悱不发","让孩子跳一跳，才能够得到"],"answer":"D","analysis":"","disputed":false},
+{"id":102,"type":"single","question":"问题解决是指个人应用一系列认知操作，从问题的（ ）达到目标状态的过程。","options":["初始状态","中间状态","问题空间","已知条件"],"answer":"A","analysis":"","disputed":false},
+{"id":103,"type":"single","question":"问题解决的第一阶段是（ ）。","options":["提出假设","发现问题","明确问题","检验假设"],"answer":"B","analysis":"","disputed":false},
+{"id":104,"type":"single","question":"常常用电吹风来吹头发，却没想过用它烘干潮湿的衣服，这种情况属于（ ）。","options":["思维定势","原型启发","功能固着","酝酿效应"],"answer":"C","analysis":"","disputed":false},
+{"id":105,"type":"single","question":"问题解决的过程包括发现问题、理解问题、提出假设和（ ）","options":["思维程序","验证假设","调查研究","论证假设"],"answer":"B","analysis":"","disputed":false},
+{"id":106,"type":"single","question":"影响问题解决的因素包括（ ）","options":["有关知识经验","功能固着","原型启发","以上全是"],"answer":"D","analysis":"","disputed":false},
+{"id":107,"type":"single","question":"把解决问题的方法一一进行尝试，最终找到解决问题的答案，这种策略是（ ）","options":["算法","手段—目的分析","逆向搜索","爬山法"],"answer":"A","analysis":"","disputed":false},
+{"id":108,"type":"single","question":"由于看到鸟的飞翔而发明了飞机，这类创造活动的主要心理影响机制是（ ）","options":["原型启发","功能固着","负向迁移","定势影响"],"answer":"A","analysis":"","disputed":false},
+{"id":109,"type":"single","question":"受先前活动影响而产生的心理活动的特殊准备状态称为（ ）","options":["原型启发","功能固着","负向迁移","定势"],"answer":"D","analysis":"","disputed":false},
+{"id":110,"type":"single","question":"创造性的核心成分是（ ）","options":["聚合思维","发散思维","直觉思维","分析思维"],"answer":"B","analysis":"","disputed":false},
+{"id":111,"type":"single","question":"专家与新手在解决问题时的差异主要表现在（ ）","options":["专家的记忆力更好","专家的知识组织更结构化，表征问题更深入","专家的反应速度更快","专家使用算法策略，新手使用启发式策略"],"answer":"B","analysis":"","disputed":false},
+{"id":112,"type":"single","question":"下列哪种做法最有助于促进学生创造性问题解决？（ ）","options":["鼓励学生快速给出唯一正确答案","鼓励学生在头脑风暴中提出多种可能性","要求学生在规定时间内完成所有题目","强调标准答案和固定解题步骤"],"answer":"B","analysis":"","disputed":false},
+{"id":113,"type":"single","question":"品德是个性心理特征中具有道德评价意义的部分，是一种（ ）。","options":["心理现象","社会现象","生理现象","管理现象"],"answer":"A","analysis":"","disputed":false},
+{"id":114,"type":"single","question":"（ ）作为个体社会行为的内在调节机制，是合乎社会规范要求的稳定的心理特性。","options":["人格","品德","认知","性格"],"answer":"B","analysis":"","disputed":false},
+{"id":115,"type":"single","question":"皮亚杰道德发展阶段理论不包括（ ）。","options":["自律阶段","无道德规则阶段","自律到他律转变阶段","他律阶段"],"answer":"C","analysis":"","disputed":false},
+{"id":116,"type":"single","question":"品德的心理结构包括道德认识、道德情感、道德意志和（ ）。","options":["道德信念","道德行为","道德评价","道德判断"],"answer":"B","analysis":"","disputed":false},
+{"id":117,"type":"single","question":"品德形成过程一般经历依从、认同和（ ）三个阶段。","options":["顺从","内化","从众","服从"],"answer":"B","analysis":"","disputed":false},
+{"id":118,"type":"single","question":"科尔伯格认为，道德发展的最高阶段是（ ）。","options":["社会契约定向","普遍伦理原则定向","相对功利定向","维护权威定向"],"answer":"B","analysis":"原题选项不完整，依据答案文件为B。","disputed":false},
+{"id":119,"type":"single","question":"影响态度与品德学习的外部条件，不包括（ ）。","options":["家庭教养方式","道德认知","社会风气","同伴群体"],"answer":"B","analysis":"","disputed":false},
+{"id":120,"type":"single","question":"“三个和尚没水喝”反映的群体心理现象是（ ）。","options":["社会助长","社会惰化","群体模仿","从众"],"answer":"B","analysis":"","disputed":false},
+{"id":121,"type":"single","question":"社会心理主要是通过（ ）表现出来。","options":["社会舆论","社会潮流","社会传统","社会行为"],"answer":"D","analysis":"","disputed":false},
+{"id":122,"type":"single","question":"在影响人际吸引的因素中，“近水楼台先得月”是属于（ ）。","options":["熟悉性和临近性","相似性与互补性","外貌","对等性或互惠性"],"answer":"A","analysis":"","disputed":false},
+{"id":123,"type":"single","question":"某寝室个别同学学习认真，得到了大家的认可，并由此全寝室的同学都学习认真努力，这种同学之间的相互影响称为（ ）。","options":["群体极化","凝聚力","从众","社会助长"],"answer":"C","analysis":"","disputed":false},
+{"id":124,"type":"single","question":"人际交往四阶段，不包括（ ）。","options":["定向","情感探索","自我暴露","稳定交往"],"answer":"C","analysis":"","disputed":false},
+{"id":125,"type":"single","question":"下面属于人际吸引规律的是（ ）。","options":["接近吸引律","对等吸引律","互补吸引律","以上全是"],"answer":"D","analysis":"","disputed":false},
+{"id":126,"type":"single","question":"属于人际吸引基本原则的是（ ）。","options":["强化原则","社会交换原则","联结原则","以上全是"],"answer":"D","analysis":"","disputed":false},
+{"id":127,"type":"single","question":"在人际交往中，人们总是喜欢那些同样喜欢自己的人，这称为（ ）。","options":["接近吸引律","对等吸引律","光环吸引律","互惠吸引律"],"answer":"B","analysis":"","disputed":false},
+{"id":128,"type":"single","question":"大胆、胆小、豪迈、内敛等属于人际交往中的（ ）体现。","options":["交往动机的迫切性","交往内容的多样性","交往目的的单纯性","交往心理的差异性"],"answer":"D","analysis":"","disputed":false},
+{"id":129,"type":"single","question":"不属于大学生交往目的的是（ ）。","options":["切磋学问","交流思想","商务合作","探索人生"],"answer":"C","analysis":"","disputed":false},
+{"id":130,"type":"single","question":"唐伯格爱情三元论不包括（ ）。","options":["亲密","生理","激情","承诺"],"answer":"B","analysis":"","disputed":false},
+{"id":131,"type":"single","question":"许多大学生恋爱关系中，双方感情较好但缺乏对未来的长远规划，这种爱情类型最接近（ ）。","options":["完美之爱","浪漫之爱","伴侣之爱","空洞之爱"],"answer":"B","analysis":"","disputed":false},
+{"id":132,"type":"single","question":"国家教育部规定的心理健康教育总目标决定了心理健康教育的主要形式只能是（ ）。","options":["心理健康教育课程","一般学科教育课程","心理咨询教育课程","心理治疗教育课程"],"answer":"A","analysis":"","disputed":false},
+{"id":133,"type":"single","question":"下列哪些行为属于心理健康的范围（ ）","options":["能极力满足个人的需要","","","有充分的自我安全感"],"answer":"D","analysis":"原题选项不完整，依据答案文件为D。","disputed":false},
+{"id":134,"type":"single","question":"大学生中最常见的心理疾病是（ ）。","options":["恐惧症","神经衰弱","强迫症","焦虑症"],"answer":"B","analysis":"","disputed":false},
+{"id":135,"type":"single","question":"让大学生摆脱自卑阴影的方法不正确的是（ ）。","options":["跟他人多比较，发现缺点，让自己成长","学会发现自己的优点和亮点","多交朋友，积极参加社交活动","不断激励自己，先定个小目标"],"answer":"A","analysis":"","disputed":false},
+{"id":136,"type":"single","question":"大学生心理健康标准包括（ ）","options":["智力正常","意志、行为健全协调","自我意识良好、人格完整","以上全是"],"answer":"D","analysis":"","disputed":false},
+{"id":137,"type":"single","question":"下列选项中，不属于独立心理学流派或系统性心理疗法的是（ ）。","options":["认知疗法","行为疗法","精神分析疗法","倾听技术"],"answer":"D","analysis":"","disputed":false},
+{"id":138,"type":"single","question":"提升大学生心理健康水平可以采取的措施包括（ ）","options":["有组织、有计划地开展大学生心理健康问题的调查研究","向学生广泛地传播心理卫生知识","建立完善的心理咨询机构","以上全是"],"answer":"D","analysis":"答案文件为B，但依据题干“包括”及选项D“以上全是”，此处按选项逻辑标注D。","disputed":false},
+{"id":139,"type":"single","question":"判断学生问题行为的主要依据是（ ）","options":["是否妨碍他人与社会","是否能适应正常的学习与社会交往","对教师的态度","对同学和家长的态度"],"answer":"B","analysis":"","disputed":false},
+{"id":140,"type":"single","question":"关于心理健康教育和心理咨询的陈述不正确的是（ ）","options":["心理健康教育的对象一般是正常的普通学生，而心理咨询对象一般为有心理问题的学生","从性质来说，心理健康教育是补救性，心理咨询则属于发展性","心理健康教育强调的是活动、体验和感受","心理健康教育与心理咨询目标一样，都是维护学生的心理健康"],"answer":"B","analysis":"","disputed":false},
+{"id":141,"type":"single","question":"在进行心理咨询时，协助来访者清楚、准确地表达其观点、所用的概念、所体验到的情感以及所经历的事件的技术是（ ）。","options":["共情技术","立即性技术","具体化","内容反应"],"answer":"C","analysis":"","disputed":false},
+{"id":142,"type":"single","question":"教师为了保证教学达到预期目的而在教学全过程中，将教学活动本身作为意识对象，不断地对其进行积极主动地计划、检查、评价、反馈、控制和调节的能力，称之为（ ）。","options":["教学反思能力","教学监控能力","教学效能感","教育机智"],"answer":"B","analysis":"","disputed":false},
+{"id":143,"type":"single","question":"一个好的测量工具必须稳定可靠，即多次测量结果要保持一致，否则便不可信。这里所讲的测量的一致性程度是指测验的（ ）。","options":["效度","信度","区分度","难度"],"answer":"B","analysis":"","disputed":false},
+{"id":144,"type":"single","question":"有利于形成良好的班级气氛，建立良好的师生关系的教师领导管理方式是（ ）。","options":["强硬专断型","仁慈专断型","放任自流型","民主型"],"answer":"D","analysis":"","disputed":false},
+{"id":145,"type":"single","question":"教师在教学过程中对学生的各种表现，特别是意外情况和偶发事件，能够及时作出灵敏的反应，并采取恰当措施和解决问题的特殊能力是指教师的（ ）。","options":["教学效能感","教学反思","教学监控能力","教学机智"],"answer":"D","analysis":"","disputed":false},
+{"id":146,"type":"single","question":"教师在教学过程中要求学生即刻接受一切命令，并以严厉的纪律来监督学生学习的这种领导方式属于（ ）。","options":["仁慈专断型","民主性","强硬专断型","放任自流型"],"answer":"C","analysis":"","disputed":false},
+{"id":147,"type":"single","question":"罗森塔尔认为，教师对学生寄予合理的期望和要求，学生就容易取得如教师期望的效果，这属于教育心理学中的（ ）效应。","options":["教师期望","登门槛","激将","牧羊犬"],"answer":"A","analysis":"","disputed":false},
+{"id":148,"type":"single","question":"一般来说，教师劳动的社会效益往往要在学生步入社会以后才能得到最终的验证，这反映了教师劳动的（ ）特征。","options":["复杂性","独立性","示范性","长效性"],"answer":"D","analysis":"","disputed":false},
+{"id":149,"type":"single","question":"（ ）是指教师为了优化教学过程，提高教学质量，以认知学习理论、教育传播理论和系统科学理论为基础，根据学生的学习特点和自身的教学风格，对教学过程的各环节、各要素预先进行科学的计划、合理的安排，制定出整体教学运行方案的过程。","options":["教学设计","教学过程","教学方法","教学工作"],"answer":"A","analysis":"","disputed":false},
+{"id":150,"type":"single","question":"教育测评的基本步骤不包括（ ）。","options":["获取信息","分析整理","价值判断","排名选拔"],"answer":"D","analysis":"","disputed":false},
+{"id":151,"type":"single","question":"在课堂上，学生出现轻微违纪行为（如小声说话、做小动作），教师最恰当的处理方式是（ ）。","options":["当众严厉批评","用眼神或走近暗示提醒","立即停止上课进行处理","置之不理"],"answer":"B","analysis":"","disputed":false},
+{"id":152,"type":"single","question":"在教学过程中进行的、目的是及时反馈和改进教学的评价是（ ）。","options":["诊断性评价","形成性评价","总结性评价","终结性评价"],"answer":"B","analysis":"","disputed":false},
+{"id":153,"type":"single","question":"教师不能顺利应对工作压力而产生的情感、态度、行为的衰竭状态，称为（ ）。","options":["自居作用","高原现象","职业倦怠","退化现象"],"answer":"C","analysis":"","disputed":false},
+{"id":154,"type":"single","question":"处在知识型、学习型的社会中，社会信息更新不断加快，知识老化加速，这就要求大学教师成为（ ）。","options":["学术研究者","终身学习者","社会服务者","师生人际关系协调者"],"answer":"B","analysis":"","disputed":false},
+{"id":155,"type":"single","question":"按美国学者司德菲对教师成长历程的划分，教师职业倦怠一般表现在（ ）。","options":["预备生涯","专家生涯","退缩生涯","更新生涯"],"answer":"C","analysis":"","disputed":false},
+{"id":156,"type":"single","question":"教师同时扮演着许多社会角色，包括（ ）。","options":["知识传播者","榜样和模范公民","学生灵魂的塑造者","以上全是"],"answer":"D","analysis":"","disputed":false},
+{"id":157,"type":"single","question":"教师职业角色意识的形成过程不包括（ ）。","options":["角色了解阶段","角色认知阶段","角色认同阶段","角色信念阶段"],"answer":"A","analysis":"","disputed":false},
+{"id":158,"type":"single","question":"常见的教师心理健康问题包括（ ）。","options":["职业倦怠","人格障碍","人际关系问题","以上全是"],"answer":"D","analysis":"","disputed":false},
+{"id":159,"type":"single","question":"张老师每次跟别人说起自己的职业，都会充满自豪。这说明张老师处于（ ）。","options":["教师角色认知阶段","教师角色认同阶段","教师角色信念阶段","教师角色内化阶段"],"answer":"C","analysis":"","disputed":false},
+{"id":160,"type":"single","question":"高校教师的角色认知不包括（ ）。","options":["社会地位","职业道德","言行举止","情感体验"],"answer":"D","analysis":"","disputed":false},
+{"id":161,"type":"single","question":"对于教师威信描述正确的是（ ）。","options":["威信的形成是一个心理过程","威信是教师角色决定的","威信使学生敬而远之","威信等同于权威"],"answer":"A","analysis":"","disputed":false},
+{"id":162,"type":"single","question":"对于熟手型教师特点描述不准确的是（ ）。","options":["对所教学科知识很熟悉","积累了大量教学经验","可以将学科知识和教学方法相融合","富于创新，善于创造性解决问题"],"answer":"D","analysis":"","disputed":false},
+{"id":163,"type":"single","question":"在教师发展水平中，不包括（ ）阶段。","options":["新手型教师","熟手型教师","资深型教师","专家型教师"],"answer":"C","analysis":"","disputed":false},
+{"id":164,"type":"single","question":"当教师非常关注自己的生存适应性时，这是教师成长过程中的（ ）阶段。","options":["关注发展","关注学生","关注情境","关注生存"],"answer":"D","analysis":"","disputed":false},
+{"id":165,"type":"single","question":"教师认为某些学生“有潜力”，于是给予他们更多关注、微笑和鼓励，结果这些学生的成绩真的提高了。这体现了（ ）。","options":["教师的威信效应","教师的期待效应","教师的首因效应","教师的近因效应"],"answer":"B","analysis":"","disputed":false},
+{"id":166,"type":"single","question":"与新教师相比，专家教师在教学方面最典型的特点是（ ）。","options":["教案编写得更加详细、具体","更多依靠直觉和经验，而非刻意回忆教学步骤","更少关注学生的课堂纪律问题","课后评价更关注教学目标的达成度"],"answer":"B","analysis":"","disputed":false},
+{"id":167,"type":"single","question":"教育的要素主要包括（ ）。","options":["教育者 教育内容 教育手段","教育者 受教育者 教育中介","教育者 教育方法 教育环境","教育材料 教育手段 教育组织形式"],"answer":"B","analysis":"","disputed":false},
+{"id":168,"type":"single","question":"高等教育的基本特征是（ ）。","options":["受教育者掌握高深知识和专门化知识及其相应的技能","高等教育具有育人的目的","高等教育具有文化拓展的职责","高等教育是高层次的教育阶段"],"answer":"A","analysis":"","disputed":false},
+{"id":169,"type":"single","question":"“教，上所施，下所效也”是我国古代（ ）对教育的解释。","options":["《学记》","《大学》","《说文解字》","《论语》"],"answer":"C","analysis":"","disputed":false},
+{"id":170,"type":"single","question":"高等教育的本质特征是（ ）。","options":["专业性","基础性","人文性","科学性"],"answer":"A","analysis":"","disputed":false},
+{"id":171,"type":"single","question":"雅斯贝尔斯认为，教育的本质是（ ）。","options":["经验的不断改造","人对人的主体间是肉交流活动","文化陶冶与繁衍","道德上可接受的方式传授有价值的东西"],"answer":"B","analysis":"原题答案标注为B，但答案文件标记为争议题。","disputed":true},
+{"id":172,"type":"single","question":"一位街头艺人在广场上表演魔术，围观群众中有人学会了其中的手法，回家后自行练习。从严格的教育学定义来看，这一现象","options":["属于社会教育，因为有学习发生","属于非正规教育，因为没有固定场所","有目的、有计划、有组织地向大众传授知识、技能与价值","不属于教育，因为缺乏有意识的教导意图"],"answer":"C","analysis":"原题选项C文字识别混乱，依据手写笔记还原为“有目的、有计划、有组织地向大众传授知识、技能与价值”。","disputed":false},
+{"id":173,"type":"single","question":"某高校教师为了完成科研任务，将全部精力投入实验室工作，课堂上照本宣科，从不与学生互动，也不关心学生的学习效果。从高等教育的本质特征来看，这位教师的行为","options":["合理，因为科研是高校教师的首要职责","合理，因为高深知识只需要单向传授","不合理，因为高等教育的本质特征是教学与科研统一","不合理，因为高等教育以育人为基本功能"],"answer":"D","analysis":"","disputed":false},
+{"id":174,"type":"single","question":"高等教育区别于其他教育形式的本质特征是","options":["培养目标的高级性","高深与专业化","受教育者的成人性","学位制度的完备性"],"answer":"B","analysis":"","disputed":false},
+{"id":175,"type":"single","question":"我国《高等教育法》正式颁布的年份是","options":["1993年","1995年","1998年","2000年"],"answer":"C","analysis":"","disputed":false},
+{"id":176,"type":"single","question":"某大学提出“以服务地方经济为己任”，鼓励教师将科研成果转化为企业生产技术，并设立技术转移中心。这所大学重点践行了高等教育的哪一项功能？","options":["育人功能","政治功能","经济功能","文化功能"],"answer":"C","analysis":"","disputed":false},
+{"id":177,"type":"single","question":"一位学者认为：“大学不应成为职业培训所，而应培养学生的批判性思维和人文素养。”这一观点强调的是高等教育的（ ）。","options":["社会服务职能","育人功能","经济功能","衍生功能"],"answer":"B","analysis":"题干中标注为A，但答案文件为B，以答案文件为准。","disputed":false},
+{"id":178,"type":"single","question":"比较以下两个定义：定义甲：“教育是有意识的以影响人的身心发展为直接目标的社会活动。” 定义乙：“教育是培养人的社会活动。” 下列说法正确的是","options":["甲定义出自潘懋元，乙定义出自叶澜","甲定义强调“有意识”，乙定义强调“培养”，二者本质不同","甲定义与乙定义在本质上是相通的，都指向人的发展","乙定义比甲定义更准确，因为排除了无意识的影响"],"answer":"","analysis":"原题答案有争议，未提供明确答案。","disputed":true},
+{"id":179,"type":"single","question":"在一次学术讨论中，有人认为“只要有人教、有人学，就是教育”。从教育学的角度看，这一说法忽略了（ ）","options":["教育内容的系统性","教育目的的自觉性与价值的正当性","教育场所的规范性","教育者的资格认证"],"answer":"B","analysis":"","disputed":false},
+{"id":180,"type":"single","question":"《中华人民共和国高等教育法》规定高等教育的任务是“培养具有创新精神和实践能力的高级专门人才”。这一规定属于高等教育目的体系中的（ ）。","options":["国家的总要求","学校的培养目标","专业的培养目标","课程的教学目标"],"answer":"A","analysis":"题干中标注为D，但答案文件为A，以答案文件为准。","disputed":false},
+{"id":181,"type":"single","question":"教育与人的主观能动性之间应当是一种（ ）的关系。","options":["单向决定","动态协调、相互促进","教育完全服从于学生兴趣","学生完全服从于教育计划"],"answer":"B","analysis":"","disputed":false},
+{"id":182,"type":"single","question":"在教育的四个构成要素中，教育组织形式和制度属于（ ）。","options":["教育者","受教育者","教育中介","教育环境"],"answer":"C","analysis":"","disputed":false},
+{"id":183,"type":"single","question":"某高校研究生导师在指导学生的过程中，不仅传授专业知识，还注重培养学生的科学精神和学术道德。这体现了高等教育内涵中的（ ）。","options":["系统的学习计划","学位制度","高智能的学习劳动","理想人格的培育"],"answer":"D","analysis":"","disputed":false},
+{"id":184,"type":"single","question":"高等学校职能与高等教育功能的关系是（ ）。","options":["职能等于功能","从外延上，高等学校要大于高等教育","从外延上，高等教育要大于高等学校","二者没有关系"],"answer":"","analysis":"原题答案有争议，未提供明确答案。","disputed":true},
+{"id":185,"type":"single","question":"以下不属于宏观教育管理体制的是（ ）。","options":["学校自主制","中央集权制","地方分权制","中央和地方合作制"],"answer":"A","analysis":"","disputed":false},
+{"id":186,"type":"single","question":"高等教育作为构成社会大系统的一个子系统，与整个社会大系统及其他子系统存在着内在的本质联系，这种本质联系表述为（ ）。","options":["高等教育受政治、经济、科技和文化发展的制约，并对政治、经济、科技和文化的发展起作用。","高等教育受政治、经济、科技和文化发展的影响，并对政治、经济、科技和文化的发展起重要作用。","高等教育受政治、经济、科技和文化发展的制约，并对政治、经济、科技和文化的发展起制约作用。","高等教育受社会政治、经济、科技和文化发展的制约，并对社会政治、经济、科技和文化的发展起作用。"],"answer":"D","analysis":"","disputed":false},
+{"id":187,"type":"single","question":"高等教育的培养目标是（ ）。","options":["技术人才","学者","高级专门人才","研究型人才"],"answer":"C","analysis":"","disputed":false},
+{"id":188,"type":"single","question":"《中华人民共和国高等教育法》规定，高等教育的任务是培养具有创造精神和实践能力的（ ）。","options":["学者","高级技术型人才","高级专门人才","研究型人才"],"answer":"C","analysis":"","disputed":false},
+{"id":189,"type":"single","question":"我国现行的高校领导机制是（ ）。","options":["校长分工负责制","校务委员会负责制","党委领导下的校长负责制","教授委员会负责制"],"answer":"C","analysis":"题干中标注为D，但答案文件为C，以答案文件为准。","disputed":false},
+{"id":190,"type":"single","question":"高等教育学是研究高等教育的一门（ ）。","options":["交叉学科","边缘学科","融合学科","综合学科"],"answer":"D","analysis":"","disputed":false},
+{"id":191,"type":"single","question":"（ ）标志着高等教育国际化发展到实质阶段。","options":["互派留学生","课程国际化","学习培训","合作办学"],"answer":"B","analysis":"","disputed":false},
+{"id":192,"type":"single","question":"高等学校基本教育单位是（ ）。","options":["班级","专业","课程","学生"],"answer":"B","analysis":"","disputed":false},
+{"id":193,"type":"single","question":"党的十八大以来我国高等教育改革呈现出（ ）趋势。","options":["内涵式发展不断取得新突破","高校育人质量持续提升","服务国家能力显著提升","包括以上三项"],"answer":"D","analysis":"","disputed":false},
+{"id":194,"type":"single","question":"属于教育内部关系的是（ ）。","options":["教育与经济的关系","教育与政治的关系","教育与文化的关系","高等教育与中等教育的关系"],"answer":"B","analysis":"题干中标注为D，但答案文件为B，以答案文件为准。","disputed":false},
+{"id":195,"type":"single","question":"我国第一部高等教育学著作是（ ）先生主编的《高等教育学》。","options":["孙培青","潘懋元","孟宪承","黄济"],"answer":"D","analysis":"题干中标注为B，但答案文件为D，以答案文件为准。","disputed":false},
+{"id":196,"type":"single","question":"高校最基本最主要的管理工作是（ ）。","options":["人事管理","后勤管理","教育教学管理","财务管理"],"answer":"C","analysis":"","disputed":false},
+{"id":197,"type":"single","question":"美国第一所高校是由英国移民的清教徒于1636年开办的（ ）。","options":["哈佛学院","耶鲁学院","威斯康星大学","麻省理工学院"],"answer":"A","analysis":"","disputed":false},
+{"id":198,"type":"single","question":"公元前124年，汉武帝采纳董仲舒等人的建议，设立的中央官学最高学府是（ ）。","options":["私学","辟雍","洋宫","太学"],"answer":"D","analysis":"","disputed":false},
+{"id":199,"type":"single","question":"1088年欧洲创建的世界上第一所大学是（ ）。","options":["博洛尼亚大学","萨莱诺大学","蒙彼利埃大学","牛津大学"],"answer":"A","analysis":"","disputed":false},
+{"id":200,"type":"single","question":"威廉·洪堡创办的（ ）大学，开启了欧美近代大学集教学与科研于一身的先河。","options":["牛津","哈佛","法兰西","柏林"],"answer":"D","analysis":"","disputed":false},
+{"id":201,"type":"single","question":"1862年设立的（ ）是我国近代第一所新式学堂。","options":["广州同文馆","上海广方言馆","天津水师学堂","京师同文馆"],"answer":"D","analysis":"","disputed":false},
+{"id":202,"type":"single","question":"北京大学的前身是（ ）。","options":["京师大学堂","中西学堂","京师同文馆","南洋公学"],"answer":"A","analysis":"","disputed":false},
+{"id":203,"type":"single","question":"我国高等学校的发展历程中，（ ）是我国近代大学教育的开始。","options":["太学","京师同文馆","京师大学堂","福建船政学堂"],"answer":"C","analysis":"","disputed":false},
+{"id":204,"type":"single","question":"博洛尼亚大学的最高管理机构是由（ ）参加的大学全体会议。","options":["全体教师","全体学生","全体管理者","教师代表和学生代表"],"answer":"B","analysis":"","disputed":false},
+{"id":205,"type":"single","question":"高等学校的发展历程中，中国古代的书院是哪种类型的高等教育代表？（ ）","options":["私立高等教育","公立高等教育","国际高等教育","职业高等教育"],"answer":"A","analysis":"","disputed":false},
+{"id":206,"type":"single","question":"大学（university）的历史长达（ ）。","options":["大约一万年","大约一千五百年","大约二千年","大约五百年"],"answer":"C","analysis":"","disputed":false},
+{"id":207,"type":"single","question":"下列高等教育机构中，不属于古代高等教育机构的是（ ）。","options":["那尼陀","岳麓书院","康斯坦丁堡帝国大学","巴黎大学"],"answer":"D","analysis":"","disputed":false},
+{"id":208,"type":"single","question":"我国汉唐盛世时期出现的一些重要学府被认为属于（ ）。","options":["真正的大学","杰出的古代学术中心和教育机构","单一的教学机构","单一的学术研究机构"],"answer":"B","analysis":"","disputed":false},
+{"id":209,"type":"single","question":"（ ）是中国殷商时期高层次的学问传授中心。","options":["国子监","书院","左学","右学"],"answer":"D","analysis":"","disputed":false},
+{"id":210,"type":"single","question":"高等教育层次不包括（ ）。","options":["专科教育","本科教育","研究生教育","博士后教育"],"answer":"D","analysis":"","disputed":false},
+{"id":211,"type":"single","question":"目前我国高等教育通学校层次主要分（ ）。","options":["高职高专、专门学院和大学、研究生院","职业技术学校、专门学院、大学、研究生院","职业技术学校、专门学院、一般性大学、研究性大学","职业院校和高等专科学校、专门学院、大学、研究生院"],"answer":"","analysis":"原题答案有争议，未提供明确答案。","disputed":true},
+{"id":212,"type":"single","question":"早期中世纪大学实行的是专业教育，主要围绕（ ）四科来组织教学活动。","options":["神哲理法","文法神医","文神农法","法神工农"],"answer":"B","analysis":"","disputed":false},
+{"id":213,"type":"single","question":"最早提出以“学术自由”和“教学和科研相结合”原则举办高等学校的人是（ ）。","options":["洪堡","费希特","克尔","布鲁贝克"],"answer":"A","analysis":"","disputed":false},
+{"id":214,"type":"single","question":"（ ）的创建标志着研究型大学的产生。","options":["柏林大学","哈弗大学","牛津大学","约翰·霍普斯金大学"],"answer":"A","analysis":"","disputed":false},
+{"id":215,"type":"single","question":"（ ）是中国自唐、宋以来最主要的私学高等教育形式。","options":["右学","国子监","辟雍","书院"],"answer":"D","analysis":"","disputed":false},
+{"id":216,"type":"single","question":"（ ）的颁布，推动了美国赠地学院运动的兴起，引导了美国大学适应社会需求、服务社会的发展趋向。","options":["莫里尔法案","退伍军人法案","国防教育法案","高等教育方向法"],"answer":"A","analysis":"","disputed":false},
+{"id":217,"type":"single","question":"马丁·特罗的高等教育大众化理论提出，高等教育毛入学率为（ ）是判断精英型高等教育发展阶段的重要指标。","options":["10%以下","15%以下","20%以下","25%以下"],"answer":"B","analysis":"","disputed":false},
+{"id":218,"type":"single","question":"一般认为，现代高等学校的直接源头是（ ）。","options":["雅典大学","古巴比伦寺庙学校","欧洲中世纪大学","中国太学"],"answer":"C","analysis":"","disputed":false},
+{"id":219,"type":"single","question":"现代意义上的大学起源于（ ）。","options":["欧洲","亚洲","美洲","非洲"],"answer":"A","analysis":"","disputed":false},
+{"id":220,"type":"single","question":"抗战期间，由清华、北大、南开大学组成的临时大学西迁昆明后，改称（ ）。","options":["震旦学院","国立长沙临时大学","京师同文馆","国立西南联合大学"],"answer":"D","analysis":"","disputed":false},
+{"id":221,"type":"single","question":"我国高等教育发展越来越具有（ ）的趋势。","options":["公立教育","私立教育","英才教育","大众教育"],"answer":"D","analysis":"","disputed":false},
+{"id":222,"type":"single","question":"始于唐朝、兴于宋朝的（ ）是集图书收藏、教学、研究于一体的教育机构。","options":["学堂","私塾","书院","精舍"],"answer":"C","analysis":"","disputed":false},
+{"id":223,"type":"single","question":"稷下学宫的性质特点为（ ）。","options":["完全官办，教师由政府任命","完全私立，经费自筹","官方出资但学术独立，兼容多家","宗教机构，培养神职人员"],"answer":"C","analysis":"","disputed":false},
+{"id":224,"type":"single","question":"文艺复兴时期，大学教育逐渐走向“世俗化”，其主要表现是（ ）。","options":["神学成为唯一学科","教学内容强调人文知识，培养身心和谐发展的绅士","大学完全脱离教会控制","只注重实用技术培训"],"answer":"B","analysis":"题干中标注为D，但答案文件为B，以答案文件为准。","disputed":false},
+{"id":225,"type":"single","question":"汉代太学的教师称为“博士”，学生称为“博士弟子”。太学正式建立的标志是（ ）。","options":["秦始皇焚书坑儒","汉武帝元朔五年为博士置弟子","隋朝设立国子监","唐太宗扩大太学规模"],"answer":"B","analysis":"","disputed":false},
+{"id":226,"type":"single","question":"宋代书院兴盛的主要原因不包括（ ）。","options":["科举规模的持续扩大","朝廷鼓励民间办学，理学发展","佛教禅林制度的影响","政府强制要求每县设立书院"],"answer":"D","analysis":"","disputed":false},
+{"id":227,"type":"single","question":"晚清设立的（ ），是我国近代第一所国立大学。","options":["天津西学学堂","南洋公学","山西大学堂","京师大学堂"],"answer":"D","analysis":"","disputed":false},
+{"id":228,"type":"single","question":"民国时期的“大学区制”是蔡元培仿效（ ）高等教育系统设立的。","options":["法国","德国","美国","英国"],"answer":"A","analysis":"","disputed":false},
+{"id":229,"type":"single","question":"高等教育系统尽量减少浪费和提高教学质量属于提高高等教育的（ ）。","options":["内部效率","外部效率","相对平等","绝对平等"],"answer":"A","analysis":"","disputed":false},
+{"id":230,"type":"single","question":"现代高校的三大职能是（ ）。","options":["培养人才 教学管理 科学研究","教学管理 教学评价 课题申报","培养人才 科学研究 社会服务","教书育人 教学改革 科学研究"],"answer":"C","analysis":"","disputed":false},
+{"id":231,"type":"single","question":"关于通识教育，下列说法正确的是（ ）。","options":["是文科生接受的教育","是专业教育的补充","排斥职业教育","不仅强调宽口径，而且重视不同学科知识的融会贯通"],"answer":"D","analysis":"","disputed":false},
+{"id":232,"type":"single","question":"衡量高等教育规模与速度的重要指标是高等教育的毛入学率。一国的高等教育进入大众教育阶段，毛入学率应达到（ ）。","options":["<15%",">15%","15%-50%",">50%"],"answer":"C","analysis":"","disputed":false},
+{"id":233,"type":"single","question":"（ ）是高等学校的中心任务。","options":["教学","科研","为社会服务","文化传承"],"answer":"A","analysis":"","disputed":false},
+{"id":234,"type":"single","question":"马丁·特罗提出，当一国高等教育入学人数与适龄人口的比例达到（ ）以上，其高等教育发展属于普及高等教育阶段。","options":["15%","25%","50%","75%"],"answer":"C","analysis":"","disputed":false},
+{"id":235,"type":"single","question":"通才教育是在高等学校中实施的（ ）的教育。","options":["宽口径、适应性强","宽口径、适应性弱","窄口径、适应性强","窄口径、适应性弱"],"answer":"A","analysis":"","disputed":false},
+{"id":236,"type":"single","question":"关于高等教育功能的表述不正确的是（ ）。","options":["促进人们认识自然，改造自然的能力不断提高","促进个体的社会化","促进价值观念的个性化","促进理解社会能力的提升"],"answer":"","analysis":"原题答案有争议，未提供明确答案。","disputed":true},
+{"id":237,"type":"single","question":"高校“通识课”的设置目的是（ ）。","options":["拓展学生的专业知识","强化学生的专业基础","提升学生的综合素养","培养科技领军人才"],"answer":"C","analysis":"","disputed":false},
+{"id":238,"type":"single","question":"高等学校的职能是高等教育功能的具体化和现实化。下列哪一项不属于现代高等学校的四大职能？","options":["培养人才","科学研究","产业创收","文化创新"],"answer":"C","analysis":"","disputed":false},
+{"id":239,"type":"single","question":"洪堡在创办柏林大学时强调“大学是一种手段，通过它，普鲁士才能为自己赢得在德意志世界及全世界的尊重”。这体现了高等教育的（ ）。","options":["育人功能","科学研究功能","社会服务功能","文化创新功能"],"answer":"B","analysis":"题干中标注为C，但答案文件为B，以答案文件为准。","disputed":false},
+{"id":240,"type":"single","question":"有学者批评过于强调科学教育可能导致人成为“单向度的人”，这主要是指（ ）。","options":["人自身的专业技能过于单一","教育忽视人文素养和品质完善，人被技术规格塑造","学生只学习自然科学，不学习社会科学","教育只服务于经济，不服务于政治"],"answer":"B","analysis":"","disputed":false},
+{"id":241,"type":"single","question":"通识教育与专业教育的关系，下列说法正确的是（ ）。","options":["通识教育与专业教育是对立矛盾的关系","通识教育只适用于文科学生","通识教育与专业教育在理念上是并列、统一多于对立的","专业教育排斥通识教育"],"answer":"C","analysis":"","disputed":false},
+{"id":242,"type":"single","question":"在世界高等教育发展史上，英才教育向大众教育转变的两种主要模式是（ ）。","options":["英国模式与法国模式","美国模式与日本模式","德国模式与苏联模式","公立模式与私立模式"],"answer":"C","analysis":"","disputed":false},
+{"id":243,"type":"single","question":"教育平等思想在历史上经历了三个发展阶段。按照胡森的划分，第一个阶段是（ ）。","options":["自由主义阶段","激进主义阶段","保守主义阶段","实用主义阶段"],"answer":"B","analysis":"题干中标注为C，但答案文件为B，以答案文件为准。","disputed":false},
+{"id":244,"type":"single","question":"高等教育政策中的两种基本价值取向是（ ）。","options":["公平与卓越","平等与效率","自由与控制","精英与大众"],"answer":"B","analysis":"","disputed":false},
+{"id":245,"type":"single","question":"通识教育的实质是（ ）。","options":["非专业性教育，旨在养成学生广泛的知识、技能和态度","所有学生必须学习的专业基础课","只面向低年级学生的公共选修课","与专业教育无关的休闲课程"],"answer":"A","analysis":"","disputed":false},
+{"id":246,"type":"single","question":"关于专业教育与通识教育的关系，下列表述最准确的是（ ）。","options":["专业教育比通识教育更重要","通识教育可以完全取代专业教育","两者应有机结合，既要有专业深度，又要有广博视野","通识教育只适用于本科低年级，高年级应全部是专业教育"],"answer":"C","analysis":"","disputed":false},
+{"id":247,"type":"single","question":"高等教育平等包括起点平等、过程平等和结果平等。其中，“结果平等”强调的是（ ）。","options":["所有人都能进入同一所大学","所有人都接受相同时长的教育","不同背景的受教育者在学业成就和后续发展机会上大致相当","所有人都获得相同的考试成绩"],"answer":"C","analysis":"","disputed":false},
+{"id":248,"type":"single","question":"下列哪一项体现了高校社会服务职能的具体实践？（ ）","options":["教授带领学生开展企业技术攻关","教师发表高水平学术论文","学校加强校园文化建设","学生参加期末考试"],"answer":"A","analysis":"","disputed":false},
+{"id":249,"type":"single","question":"某高校要求所有学生（无论文理）必须修读一定学分的自然科学、社会科学和人文学科课程。这种做法主要体现了（ ）。","options":["专业教育","通识教育","职业教育","英才教育"],"answer":"B","analysis":"","disputed":false},
+{"id":250,"type":"single","question":"对部分品学兼优或某一方面有特殊才能的学生实行免试录取的招生制度是指（ ）。","options":["保送生制度","定向生制度","委培生制度","自费生制度"],"answer":"A","analysis":"","disputed":false},
+{"id":251,"type":"single","question":"决定高等教育发展速度和规模的主要因素是（ ）。","options":["政治","经济","文化","法律"],"answer":"B","analysis":"","disputed":false},
+{"id":252,"type":"single","question":"从教育发展的历史进程来看，高等教育普及化的进程始于（ ）。","options":["工业经济时代中期","工业经济时代中后期","工业经济向知识经济过渡时期","知识经济时代"],"answer":"C","analysis":"","disputed":false},
+{"id":253,"type":"single","question":"人才培养的基本单元是（ ）。","options":["专业","学科","高等学校","学院"],"answer":"A","analysis":"","disputed":false}
+  /* ===== 👆👆👆  题目粘贴到这里  👆👆👆 ===== */
+];
+
+
+/* ==========================================================================
+   ② 引擎代码 —— 一般不需要改动
+   ========================================================================== */
+const LETTERS = ['A','B','C','D','E','F','G','H','I','J'];
+const $ = id => document.getElementById(id);
+
+const el = {
+  stats: $('stats'), skipDisputed: $('skipDisputed'), modeSel: $('modeSel'),
+  btnWrongOnly: $('btnWrongOnly'), btnRestart: $('btnRestart'), btnSheet: $('btnSheet'),
+  emptyTip: $('emptyTip'), qArea: $('qArea'),
+  qType: $('qType'), qDisputed: $('qDisputed'), qIndex: $('qIndex'), qText: $('qText'),
+  options: $('options'), analysis: $('analysis'), ansText: $('ansText'),
+  myAns: $('myAns'), anaText: $('anaText'),
+  btnPrev: $('btnPrev'), btnSubmit: $('btnSubmit'), btnSkip: $('btnSkip'), btnNext: $('btnNext'),
+  sheet: $('sheet'), sheetMask: $('sheetMask'), sheetGrid: $('sheetGrid'),
+  btnSheetClose: $('btnSheetClose'), btnFilterAll: $('btnFilterAll'), btnFilterWrong: $('btnFilterWrong')
+};
+
+/* ---------- 工具函数 ---------- */
+function shuffle(a){
+  for (let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function stripPrefix(s){
+  return String(s == null ? '' : s).replace(/^\s*[A-Ja-j]\s*[\.、\)）:：]\s*/, '').trim();
+}
+function normAnswer(rawAns, opts){
+  if (rawAns == null) return [];
+  let arr = Array.isArray(rawAns) ? rawAns.map(x => String(x).trim()) : [String(rawAns).trim()];
+  const out = [];
+  for (const x of arr){
+    const up = x.toUpperCase();
+    if (/^[A-J]+$/.test(up)){ out.push(...up.split('')); continue; }
+    if (/^[A-J、,，\s\/]+$/.test(up) && /[A-J]/.test(up)){ out.push(...(up.match(/[A-J]/g) || [])); continue; }
+    const i = opts.findIndex(o => o.trim() === x || o.trim().toUpperCase() === up);
+    if (i >= 0){ out.push(LETTERS[i]); continue; }
+    if (/^(正确|对|是|√|T|TRUE)$/i.test(x)){ out.push('A'); continue; }
+    if (/^(错误|错|否|×|F|FALSE)$/i.test(x)){ out.push('B'); continue; }
+  }
+  return [...new Set(out)];
+}
+function normalizeQuestion(raw, idx){
+  const q = Object.assign({}, raw);
+  q._i = idx;
+  q.id = (raw.id != null) ? raw.id : (idx + 1);
+  q.disputed = raw.disputed === true || raw.disputed === 1 || raw.disputed === 'true';
+  q.question = raw.question || raw.title || raw.stem || '';
+
+  // 题型
+  const tRaw = String(raw.type || raw.questionType || '');
+  let type;
+  if (/多选/.test(tRaw)) type = 'multiple';
+  else if (/判断/.test(tRaw)) type = 'judge';
+  else if (/单选/.test(tRaw)) type = 'single';
+  else if (['single','multiple','judge'].includes(tRaw)) type = tRaw;
+  else type = null;
+
+  // 选项
+  let opts = raw.options || raw.opts || raw.choices || [];
+  if (typeof opts === 'string') opts = opts.split(/\r?\n|；|;/);
+  opts = (opts || []).map(stripPrefix).filter(o => String(o).trim() !== '');
+  if (opts.length === 0 && type === 'judge') opts = ['正确', '错误'];
+  q.options = opts;
+
+  // 答案
+  q.answerArr = normAnswer(raw.answer != null ? raw.answer : raw.answers, q.options);
+
+  // 兜底推断题型
+  if (!type) type = (q.answerArr.length > 1) ? 'multiple' : 'single';
+  q.type = type;
+
+  q.analysis = raw.analysis || raw.explain || raw.explanation || '';
+  return q;
+}
+function sameSet(a, b){
+  if (a.length !== b.length) return false;
+  const x = [...a].sort().join(''), y = [...b].sort().join('');
+  return x === y;
+}
+
+/* ---------- 状态 ---------- */
+let bank = [];              // 规范化后的题库
+let queue = [];             // 当前答题序列（存 bank 下标）
+let cur = 0;                // queue 中的位置
+let records = {};           // bank下标 -> {selected:[], submitted:bool, correct:bool}
+let filterMode = 'all';     // 'all' | 'wrong'
+
+/* ---------- 初始化 ---------- */
+function init(){
+  bank = (QUESTION_BANK || []).map(normalizeQuestion);
+  rebuild(false);
+  bindEvents();
+}
+
+/* ---------- 重建队列 ---------- */
+function rebuild(keepRecords){
+  if (!keepRecords){ records = {}; }
+  let idxs = bank.map((q, i) => i);
+
+  if (el.skipDisputed.checked) idxs = idxs.filter(i => !bank[i].disputed);
+
+  if (filterMode === 'wrong'){
+    idxs = idxs.filter(i => records[i] && records[i].submitted && !records[i].correct);
+  }
+  if (el.modeSel.value === 'random') shuffle(idxs);
+
+  queue = idxs;
+  cur = 0;
+  el.btnWrongOnly.classList.toggle('on', filterMode === 'wrong');
+  el.btnWrongOnly.textContent = filterMode === 'wrong' ? '返回全部' : '只刷错题';
+  render();
+}
+
+/* ---------- 渲染 ---------- */
+function render(){
+  updateStats();
+  const hasQ = queue.length > 0;
+  el.qArea.hidden = !hasQ;
+  el.emptyTip.hidden = hasQ;
+
+  if (!hasQ){
+    if (!bank.length){
+      el.emptyTip.innerHTML = '题库为空<br><span style="font-size:13px">请把题目粘贴到脚本里的 <b>QUESTION_BANK</b> 数组中</span>';
+    } else if (filterMode === 'wrong'){
+      el.emptyTip.textContent = '当前没有错题，去刷全部题目吧～';
+    } else {
+      el.emptyTip.textContent = '当前筛选条件下没有题目（可能全部被"跳过争议题"过滤了）。';
+    }
+    renderSheet();
+    return;
+  }
+
+  if (cur < 0) cur = 0;
+  if (cur > queue.length - 1) cur = queue.length - 1;
+
+  const bi = queue[cur];
+  const q = bank[bi];
+  const rec = records[bi];
+  const submitted = !!(rec && rec.submitted);
+
+  el.qType.textContent = { single:'单选题', multiple:'多选题', judge:'判断题' }[q.type] || '单选题';
+  el.qDisputed.hidden = !q.disputed;
+  el.qIndex.textContent = `第 ${cur + 1} / ${queue.length} 题　(题库 #${q.id})`;
+  el.qText.textContent = q.question;
+
+  // 选项
+  el.options.innerHTML = '';
+  q.options.forEach((text, i) => {
+    const L = LETTERS[i];
+    const isSel = !!(rec && rec.selected.includes(L));
+    const isAns = q.answerArr.includes(L);
+
+    const div = document.createElement('div');
+    div.className = 'option';
+    if (submitted){
+      div.classList.add('locked');
+      if (isAns) div.classList.add('right');
+      else if (isSel) div.classList.add('wrong');
+    } else if (isSel){
+      div.classList.add('sel');
+    }
+
+    const tag = document.createElement('span');
+    tag.className = 'tag';
+    tag.textContent = L;
+    const txt = document.createElement('span');
+    txt.className = 'txt';
+    txt.textContent = text;
+    div.appendChild(tag);
+    div.appendChild(txt);
+
+    if (!submitted) div.addEventListener('click', () => onPick(L));
+    el.options.appendChild(div);
+  });
+
+  // 解析
+  if (submitted){
+    el.analysis.hidden = false;
+    el.ansText.textContent = q.answerArr.join('') || '—';
+    el.myAns.textContent = `　你的答案：${rec.selected.join('') || '未选'}　${rec.correct ? '✅ 正确' : '❌ 错误'}`;
+    el.myAns.className = 'my-ans ' + (rec.correct ? 'ok' : 'bad');
+    el.anaText.textContent = q.analysis || '（本题暂无解析）';
+  } else {
+    el.analysis.hidden = true;
+  }
+
+  // 按钮状态
+  const isMulti = q.type === 'multiple';
+  el.btnSubmit.hidden = !isMulti || submitted;
+  el.btnSubmit.disabled = !(rec && rec.selected.length);
+  el.btnPrev.disabled = cur === 0;
+  el.btnNext.disabled = cur === queue.length - 1;
+
+  renderSheet();
+}
+
+/* ---------- 答题卡 ---------- */
+function renderSheet(){
+  el.sheetGrid.innerHTML = '';
+  queue.forEach((bi, i) => {
+    const rec = records[bi];
+    const b = document.createElement('button');
+    b.className = 'cell';
+    b.textContent = i + 1;
+    if (rec && rec.submitted) b.classList.add(rec.correct ? 'ok' : 'bad');
+    if (i === cur) b.classList.add('active');
+    if (bank[bi] && bank[bi].disputed) b.classList.add('disputed');
+    b.addEventListener('click', () => { cur = i; render(); closeSheet(); });
+    el.sheetGrid.appendChild(b);
+  });
+}
+
+/* ---------- 统计 ---------- */
+function updateStats(){
+  let done = 0, right = 0;
+  Object.keys(records).forEach(k => {
+    const r = records[k];
+    if (r && r.submitted){ done++; if (r.correct) right++; }
+  });
+  const wrong = done - right;
+  const rate = done ? Math.round(right / done * 100) : 0;
+  el.stats.innerHTML =
+    `已答 <b>${done}</b>/<b>${bank.length}</b>` +
+    `<span>✅ <b style="color:var(--ok)">${right}</b></span>` +
+    `<span>❌ <b style="color:var(--bad)">${wrong}</b></span>` +
+    `<span>正确率 <b>${rate}%</b></span>`;
+}
+
+/* ---------- 交互 ---------- */
+function onPick(L){
+  const bi = queue[cur];
+  const q = bank[bi];
+  let rec = records[bi];
+  if (!rec) rec = records[bi] = { selected: [], submitted: false, correct: false };
+  if (rec.submitted) return;
+
+  if (q.type === 'multiple'){
+    const i = rec.selected.indexOf(L);
+    if (i >= 0) rec.selected.splice(i, 1);
+    else rec.selected.push(L);
+    rec.selected.sort();
+    render();
+  } else {
+    rec.selected = [L];
+    doSubmit();
+  }
+}
+
+function doSubmit(){
+  const bi = queue[cur];
+  const q = bank[bi];
+  const rec = records[bi];
+  if (!rec || rec.submitted || !rec.selected.length) return;
+  rec.submitted = true;
+  rec.correct = sameSet(rec.selected, q.answerArr);
+  render();
+}
+
+function go(delta){
+  if (!queue.length) return;
+  const n = cur + delta;
+  if (n < 0 || n > queue.length - 1) return;
+  cur = n;
+  render();
+}
+
+/* ---------- 事件绑定 ---------- */
+function bindEvents(){
+  el.btnPrev.addEventListener('click', () => go(-1));
+  el.btnNext.addEventListener('click', () => go(1));
+  el.btnSkip.addEventListener('click', () => go(1));
+  el.btnSubmit.addEventListener('click', doSubmit);
+
+  el.btnRestart.addEventListener('click', () => {
+    filterMode = 'all';
+    rebuild(false);
+  });
+
+  el.btnWrongOnly.addEventListener('click', () => {
+    filterMode = (filterMode === 'wrong') ? 'all' : 'wrong';
+    rebuild(true);
+  });
+
+  el.skipDisputed.addEventListener('change', () => rebuild(true));
+  el.modeSel.addEventListener('change', () => rebuild(true));
+
+  el.btnSheet.addEventListener('click', openSheet);
+  el.btnSheetClose.addEventListener('click', closeSheet);
+  el.sheetMask.addEventListener('click', closeSheet);
+  el.btnFilterAll.addEventListener('click', () => { filterMode = 'all'; rebuild(true); closeSheet(); });
+  el.btnFilterWrong.addEventListener('click', () => { filterMode = 'wrong'; rebuild(true); closeSheet(); });
+
+  // 键盘快捷键
+  document.addEventListener('keydown', e => {
+    if (['INPUT','SELECT','TEXTAREA'].includes(e.target.tagName)) return;
+    if (!queue.length) return;
+    if (e.key === 'ArrowLeft'){ go(-1); return; }
+    if (e.key === 'ArrowRight'){ go(1); return; }
+    if (e.key === 'Enter'){
+      const bi = queue[cur], q = bank[bi], rec = records[bi];
+      if (q.type === 'multiple' && !(rec && rec.submitted)) doSubmit();
+      else go(1);
+      return;
+    }
+    const k = e.key.toUpperCase();
+    const idx = LETTERS.indexOf(k);
+    if (idx >= 0){
+      const q = bank[queue[cur]];
+      if (q && idx < q.options.length) onPick(k);
+    }
+  });
+}
+
+function openSheet(){ el.sheet.classList.add('show'); el.sheetMask.classList.add('show'); }
+function closeSheet(){ el.sheet.classList.remove('show'); el.sheetMask.classList.remove('show'); }
+
+/* ---------- 启动 ---------- */
+init();
+</script>
+</body>
+</html>
